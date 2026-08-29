@@ -4,10 +4,10 @@ I'm tired of pressing **Load more** a dozen times just to review a PR.
 
 GitHub hides comments, review threads, and older conversation behind
 pagination and collapsible rows. On a busy pull request that means click,
-wait, click, wait — until you've actually seen the thread.
+wait, click, wait ; until you've actually seen the thread.
 
 This extension adds one button on Issue and Pull Request pages:
-**Expand all**. It clicks the boring stuff for you — Load more, Show older,
+**Expand all**. It clicks the boring stuff for you ; Load more, Show older,
 hidden items, resolved review threads, truncated comments — until the
 conversation is actually readable.
 
