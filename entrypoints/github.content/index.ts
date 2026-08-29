@@ -1,5 +1,3 @@
-/// <reference types="vite/client" />
-
 import { defineContentScript } from 'wxt/utils/define-content-script';
 import { startController } from '../../src/app/controller.ts';
 import { createEngine } from '../../src/engine/engine.ts';

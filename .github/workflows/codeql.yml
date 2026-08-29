@@ -16,7 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
+      actions: read
       contents: read
+      packages: read
       security-events: write
     steps:
       - name: Checkout
@@ -30,3 +32,6 @@ jobs:
         uses: github/codeql-action/analyze@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
         with:
           category: '/language:javascript-typescript'
+          # SARIF upload requires GitHub Code Security, which is not enabled on
+          # this private repository. Analysis still runs.
+          upload: ${{ github.event.repository.private && 'never' || 'always' }}

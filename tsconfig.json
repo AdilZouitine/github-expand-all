@@ -22,6 +22,7 @@
     "wxt.config.ts",
     "vitest.config.ts",
     "playwright.config.ts",
-    "e2e/playwright.config.ts"
+    "e2e/playwright.config.ts",
+    "vite-env.d.ts"
   ]
 }
