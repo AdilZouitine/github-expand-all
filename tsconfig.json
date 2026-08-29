@@ -1,0 +1,27 @@
+{
+  "extends": "./.wxt/tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "useUnknownInCatchVariables": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "types": ["node"]
+  },
+  "include": [
+    "src/**/*.ts",
+    "entrypoints/**/*.ts",
+    "tests/**/*.ts",
+    "e2e/**/*.ts",
+    "wxt.config.ts",
+    "vitest.config.ts",
+    "playwright.config.ts",
+    "e2e/playwright.config.ts"
+  ]
+}

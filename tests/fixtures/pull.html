@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Pull Request 2 · acme/demo</title>
+  </head>
+  <body>
+    <div data-testid="issue-header-actions"></div>
+    <div data-testid="issue-viewer-container" class="js-discussion">
+      <details
+        class="js-resolvable-timeline-thread-container"
+        data-resolved="true"
+      >
+        <summary data-testid="review-thread-expand">Show resolved</summary>
+        <div>
+          <p>Resolved review thread.</p>
+          <button
+            type="button"
+            data-testid="load-more-review-comments"
+            data-url="/review-comments?after=batch1"
+          >
+            Load more review comments
+          </button>
+        </div>
+      </details>
+      <button
+        type="button"
+        data-testid="review-thread-toggle"
+        aria-expanded="false"
+      >
+        Expand conversation
+      </button>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+.tools/
+
+# Generated
+.output/
+.wxt/
+.turbo/
+dist/
+
+# Tests and coverage
+coverage/
+playwright-report/
+test-results/
+blob-report/
+.playwright-browsers/
+
+# Local benchmark data
+.codspeed/
+*.bench.json
+
+# Packaged artifacts
+*.zip
+*.xpi
+artifacts/
+
+# Secrets and env
+.env
+.env.*
+!.env.example
+.env.submit
+
+# Logs and OS
+*.log
+.DS_Store
+Thumbs.db
+
+# Editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp

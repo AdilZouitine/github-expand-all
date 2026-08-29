@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Already expanded · acme/demo</title>
+  </head>
+  <body>
+    <div data-testid="issue-viewer-container" class="js-discussion">
+      <button
+        type="button"
+        data-testid="comment-show-more"
+        aria-expanded="true"
+        aria-controls="comment-body-open"
+      >
+        Show more
+      </button>
+      <div id="comment-body-open">Full comment.</div>
+      <details data-resolved="true" open>
+        <summary data-testid="review-thread-expand">Show resolved</summary>
+        <p>Already open thread.</p>
+      </details>
+    </div>
+  </body>
+</html>

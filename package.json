@@ -1,0 +1,59 @@
+{
+  "name": "github-expand-all",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Expand hidden and collapsed conversation content on GitHub Issues and Pull Requests.",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@11.24.0",
+  "engines": {
+    "node": ">=24.20.0",
+    "pnpm": ">=11.24.0"
+  },
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build -b firefox",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip -b firefox",
+    "postinstall": "wxt prepare",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings=0",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test --config e2e/playwright.config.ts",
+    "bench": "vitest bench --run",
+    "validate": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test:coverage",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*": "prettier --write --ignore-unknown",
+    "*.{ts,js,mjs,cjs}": "eslint --fix --max-warnings=0 --no-warn-ignored"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@codspeed/vitest-plugin": "5.7.1",
+    "@commitlint/cli": "21.2.2",
+    "@commitlint/config-conventional": "21.2.2",
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.62.1",
+    "@types/node": "26.4.0",
+    "@vitest/coverage-v8": "4.1.11",
+    "eslint": "10.9.1",
+    "eslint-config-prettier": "10.1.8",
+    "globals": "17.11.0",
+    "happy-dom": "20.11.12",
+    "husky": "9.1.7",
+    "lint-staged": "17.4.1",
+    "prettier": "3.9.6",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.68.0",
+    "vitest": "4.1.11",
+    "web-ext": "10.6.0",
+    "wxt": "0.21.4"
+  }
+}

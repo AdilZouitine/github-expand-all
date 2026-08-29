@@ -1,0 +1,241 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: read
+
+env:
+  TZ: UTC
+  LC_ALL: C
+
+defaults:
+  run:
+    shell: bash
+
+# Store submission stays off until repository variable ENABLE_STORE_SUBMIT is
+# the literal string `true`. Default releases publish GitHub artifacts only.
+jobs:
+  validate-tag:
+    name: Validate tag
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.verify.outputs.version }}
+      tag: ${{ steps.verify.outputs.tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-tags: true
+      - name: Require annotated tag
+        run: |
+          set -euo pipefail
+          kind="$(git cat-file -t "$GITHUB_REF")"
+          if [[ "$kind" != tag ]]; then
+            echo "Release tags must be annotated, got ${kind}"
+            exit 1
+          fi
+      - name: Verify tag matches package.json
+        id: verify
+        run: node scripts/verify-tag-version.mjs
+
+  build:
+    name: Build artifacts
+    needs: [validate-tag]
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Enable pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: 11.24.0
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - name: SOURCE_DATE_EPOCH from tag commit
+        run: echo "SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)" >> "$GITHUB_ENV"
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Build and zip Chrome and Firefox
+        run: |
+          set -euo pipefail
+          pnpm build
+          pnpm zip
+          pnpm build:firefox
+          pnpm zip:firefox
+      - name: Assert manifests and archives
+        run: |
+          set -euo pipefail
+          node scripts/assert-manifest.mjs
+          node scripts/assert-artifacts.mjs
+      - name: Source archive and checksums
+        env:
+          VERSION: ${{ needs.validate-tag.outputs.version }}
+        run: |
+          set -euo pipefail
+          node scripts/create-source-archive.mjs
+          cd .output
+          sha256sum \
+            "github-expand-all-${VERSION}-chrome.zip" \
+            "github-expand-all-${VERSION}-firefox.zip" \
+            "github-expand-all-${VERSION}-source.zip" \
+            | tee "github-expand-all-${VERSION}-SHA256SUMS.txt"
+          sha256sum -c "github-expand-all-${VERSION}-SHA256SUMS.txt"
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-artifacts
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            .output/github-expand-all-*-chrome.zip
+            .output/github-expand-all-*-firefox.zip
+            .output/github-expand-all-*-source.zip
+            .output/github-expand-all-*-SHA256SUMS.txt
+
+  github-release:
+    name: GitHub Release
+    needs: [validate-tag, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Download artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release-artifacts
+          path: release-artifacts
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.validate-tag.outputs.version }}
+          TAG: ${{ needs.validate-tag.outputs.tag }}
+        run: |
+          set -euo pipefail
+          notes="$(mktemp)"
+          {
+            echo "## GitHub Expand All v${VERSION}"
+            echo
+            echo "See CHANGELOG.md for user-visible changes."
+            echo
+            echo "Chrome Web Store and Firefox Add-ons availability remain subject"
+            echo "to review. Automatic store submission runs only when the"
+            echo "repository variable ENABLE_STORE_SUBMIT is \`true\`."
+            echo
+            echo "### Privacy"
+            echo
+            echo "No permission or privacy changes: the extension collects and"
+            echo "transmits no data."
+            echo
+            echo "### Checksums"
+            echo
+            echo '```'
+            cat "release-artifacts/github-expand-all-${VERSION}-SHA256SUMS.txt"
+            echo '```'
+            echo
+            echo "Commit: ${GITHUB_SHA}"
+          } > "$notes"
+          gh release create "$TAG" \
+            --title "GitHub Expand All v${VERSION}" \
+            --notes-file "$notes" \
+            --verify-tag \
+            "release-artifacts/github-expand-all-${VERSION}-chrome.zip" \
+            "release-artifacts/github-expand-all-${VERSION}-firefox.zip" \
+            "release-artifacts/github-expand-all-${VERSION}-source.zip" \
+            "release-artifacts/github-expand-all-${VERSION}-SHA256SUMS.txt"
+
+  chrome-web-store:
+    name: Chrome Web Store
+    if: ${{ vars.ENABLE_STORE_SUBMIT == 'true' }}
+    environment: chrome-web-store
+    needs: [validate-tag, github-release]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Enable pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: 11.24.0
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Download artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release-artifacts
+          path: release-artifacts
+      - name: Submit existing Chrome ZIP
+        env:
+          VERSION: ${{ needs.validate-tag.outputs.version }}
+          CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
+          CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
+          CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
+          CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          CHROME_PUBLISHER_ID: ${{ secrets.CHROME_PUBLISHER_ID }}
+        run: |
+          set +x
+          set -euo pipefail
+          pnpm exec wxt submit --chrome-zip \
+            "release-artifacts/github-expand-all-${VERSION}-chrome.zip"
+
+  firefox-amo:
+    name: Firefox AMO
+    if: ${{ vars.ENABLE_STORE_SUBMIT == 'true' }}
+    environment: firefox-amo
+    needs: [validate-tag, github-release]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Enable pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+        with:
+          version: 11.24.0
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Download artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release-artifacts
+          path: release-artifacts
+      - name: Submit existing Firefox ZIP and source
+        env:
+          VERSION: ${{ needs.validate-tag.outputs.version }}
+          FIREFOX_EXTENSION_ID: github-expand-all@gitscroll.dev
+          FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
+          FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
+        run: |
+          set +x
+          set -euo pipefail
+          pnpm exec wxt submit \
+            --firefox-zip \
+            "release-artifacts/github-expand-all-${VERSION}-firefox.zip" \
+            --firefox-sources-zip \
+            "release-artifacts/github-expand-all-${VERSION}-source.zip"

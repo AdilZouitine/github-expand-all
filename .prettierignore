@@ -1,0 +1,14 @@
+node_modules
+.output
+.wxt
+coverage
+playwright-report
+test-results
+blob-report
+pnpm-lock.yaml
+*.zip
+*.xpi
+artifacts
+CHANGELOG.md
+.vscode
+.tools

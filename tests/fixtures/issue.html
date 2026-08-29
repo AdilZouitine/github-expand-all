@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Issue 1 · acme/demo</title>
+  </head>
+  <body>
+    <div data-testid="issue-header-actions"></div>
+    <div data-testid="issue-viewer-container" class="js-discussion">
+      <article>
+        <p>Issue body.</p>
+        <button
+          type="button"
+          data-testid="comment-show-more"
+          aria-expanded="false"
+          aria-controls="comment-body-1"
+        >
+          Show more
+        </button>
+        <div id="comment-body-1">Truncated comment.</div>
+      </article>
+      <div class="minimized-comment">
+        <button type="button" data-testid="minimized-comment-reveal">
+          Show comment
+        </button>
+      </div>
+      <div class="js-timeline-item-hidden">
+        <button type="button" data-testid="hidden-items-expand">
+          Show 3 hidden items
+        </button>
+      </div>
+      <form class="ajax-pagination-form" action="/timeline" method="get">
+        <button
+          type="submit"
+          data-testid="timeline-load-more"
+          data-url="/timeline?after=page1"
+        >
+          Load more
+        </button>
+      </form>
+    </div>
+  </body>
+</html>

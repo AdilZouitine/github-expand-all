@@ -1,0 +1,8 @@
+# High-risk paths require review from the maintainer.
+/.github/workflows/ @zouitineadil
+/src/selectors/ @zouitineadil
+/src/engine/ @zouitineadil
+/wxt.config.ts @zouitineadil
+/scripts/ @zouitineadil
+/docs/privacy.md @zouitineadil
+/docs/threat-model.md @zouitineadil

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Negative controls · acme/demo</title>
+  </head>
+  <body>
+    <nav class="file-tree">
+      <details>
+        <summary>src</summary>
+        <p>File tree disclosure outside the conversation.</p>
+      </details>
+    </nav>
+    <button
+      type="button"
+      data-testid="comment-show-more"
+      aria-expanded="false"
+      aria-controls="outside-comment"
+    >
+      Show more
+    </button>
+    <div data-testid="issue-viewer-container" class="js-discussion">
+      <button type="button">Merge</button>
+      <button type="button">Close issue</button>
+      <button type="button">Resolve conversation</button>
+      <button type="button">Unresolve</button>
+      <button type="submit" name="comment">Comment</button>
+      <button type="button">Submit comment</button>
+      <button type="button" aria-label="Add reaction">Add reaction</button>
+      <button type="button">Edit</button>
+      <button type="button">Reopen</button>
+      <button type="button">Delete</button>
+      <button type="button">Minimize</button>
+      <button type="button">Report</button>
+      <button type="button">Block</button>
+      <button type="button">Unsubscribe</button>
+      <button type="button">Approve</button>
+      <button type="button">Dismiss review</button>
+      <div data-github-expand-all="host">
+        <button
+          type="button"
+          data-testid="timeline-load-more"
+          data-url="/timeline?after=host"
+        >
+          Load more
+        </button>
+      </div>
+    </div>
+  </body>
+</html>
