@@ -9,6 +9,8 @@ permissions:
 jobs:
   dependency-review:
     name: Dependency review
+    # Private repos need GitHub Code Security for this API.
+    if: ${{ !github.event.repository.private }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
