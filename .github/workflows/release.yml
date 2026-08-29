@@ -95,6 +95,7 @@ jobs:
           name: release-artifacts
           if-no-files-found: error
           retention-days: 14
+          include-hidden-files: true
           path: |
             .output/github-expand-all-*-chrome.zip
             .output/github-expand-all-*-firefox.zip
