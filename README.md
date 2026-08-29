@@ -1,15 +1,21 @@
 # GitHub Expand All
 
-A Manifest V3 content-script extension that adds one user-initiated action on
-GitHub Issue and Pull Request pages: expand hidden, collapsed, deferred, or
-paginated conversation content.
+I'm tired of pressing **Load more** a dozen times just to review a PR.
 
-**Store status:** not published on the Chrome Web Store or Firefox Add-ons
-(AMO). Install from a local production build until the first reviewed listing
-exists.
+GitHub hides comments, review threads, and older conversation behind
+pagination and collapsible rows. On a busy pull request that means click,
+wait, click, wait — until you've actually seen the thread.
+
+This extension adds one button on Issue and Pull Request pages:
+**Expand all**. It clicks the boring stuff for you — Load more, Show older,
+hidden items, resolved review threads, truncated comments — until the
+conversation is actually readable.
+
+Not in the Chrome Web Store or Firefox Add-ons yet. Load it from a local
+build until it is.
 
 **Privacy:** the extension collects, stores, and transmits no data. It has no
-backend and makes no extension-originated network requests. See
+backend and makes no network requests of its own. See
 [docs/privacy.md](docs/privacy.md).
 
 ## Install from source
